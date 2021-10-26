@@ -1,7 +1,7 @@
 {
-  "name": "backend",
+  "name": "nestjs-boilerplate-firebase-auth",
   "version": "0.0.1",
-  "description": "",
+  "description": "A simple NestJS boilerplate project with Firebase Auth",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
