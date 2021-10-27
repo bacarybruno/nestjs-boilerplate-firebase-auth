@@ -19,6 +19,7 @@ async function configureSwagger(app) {
     .setTitle('NestJS Boilerplate')
     .setDescription('A simple NestJS app template')
     .setVersion('0.0.1')
+    .addTag('Account')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

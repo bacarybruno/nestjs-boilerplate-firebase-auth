@@ -11,6 +11,7 @@ import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
+  ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -29,6 +30,7 @@ import {
 } from './account.types';
 
 @Controller('account')
+@ApiTags('Account')
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
 
