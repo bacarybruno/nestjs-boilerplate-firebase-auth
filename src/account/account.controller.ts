@@ -25,6 +25,8 @@ import {
   InitResetPasswordDto,
   LoginDto,
   ResetPassworDto,
+  SocialLoginDto,
+  SocialSignInProviders,
   UserRecordDto,
   VerifyResetPassworDto,
 } from './account.types';
@@ -49,6 +51,34 @@ export class AccountController {
   @ApiBadRequestResponse({ description: 'Bad request' })
   async login(@Body() credentials: LoginDto): Promise<AccessTokenDto> {
     const accessToken = await this.accountService.login(credentials);
+    return { accessToken };
+  }
+
+  @Post('/login/facebookk')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: AccessTokenDto })
+  @ApiBadRequestResponse({ description: 'Bad request' })
+  async loginWithFacebook(
+    @Body() credentials: SocialLoginDto,
+  ): Promise<AccessTokenDto> {
+    const accessToken = await this.accountService.socialSignIn(
+      SocialSignInProviders.FACEBOOK,
+      credentials.token,
+    );
+    return { accessToken };
+  }
+
+  @Post('/login/google')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: AccessTokenDto })
+  @ApiBadRequestResponse({ description: 'Bad request' })
+  async loginWithGoogle(
+    @Body() credentials: SocialLoginDto,
+  ): Promise<AccessTokenDto> {
+    const accessToken = await this.accountService.socialSignIn(
+      SocialSignInProviders.GOOGLE,
+      credentials.token,
+    );
     return { accessToken };
   }
 

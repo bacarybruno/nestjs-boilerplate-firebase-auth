@@ -5,6 +5,7 @@ import {
   CreateAccountDto,
   LoginDto,
   ResetPassworDto,
+  SocialSignInProviders,
   VerifyResetPassworDto,
 } from './account.types';
 import { FirebaseService } from '../firebase/firebase.service';
@@ -43,6 +44,21 @@ export class AccountService {
   async login(credentials: LoginDto): Promise<AccessToken> {
     try {
       const accessToken = await this.firebaseService.login(credentials);
+      return accessToken;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async socialSignIn(
+    provider: SocialSignInProviders,
+    token: string,
+  ): Promise<AccessToken> {
+    try {
+      const accessToken = await this.firebaseService.socialLogin(
+        provider,
+        token,
+      );
       return accessToken;
     } catch (error) {
       throw new BadRequestException(error.message);

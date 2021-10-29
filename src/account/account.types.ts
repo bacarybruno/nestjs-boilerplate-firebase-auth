@@ -15,6 +15,10 @@ export class LoginDto {
   @ApiProperty() @IsNotEmpty() password: string;
 }
 
+export class SocialLoginDto {
+  @ApiProperty() @IsNotEmpty() token: string;
+}
+
 export class CreateAccountDto extends LoginDto {
   @ApiProperty() firstName: string;
   @ApiProperty() lastName: string;
@@ -86,4 +90,9 @@ export class DecodedIdTokenDto implements DecodedIdToken {
     second_factor_identifier?: string;
     tenant?: string;
   };
+}
+
+export enum SocialSignInProviders {
+  FACEBOOK = 'facebook',
+  GOOGLE = 'google',
 }

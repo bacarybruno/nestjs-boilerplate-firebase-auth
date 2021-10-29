@@ -10,10 +10,14 @@ import {
 import {
   getAuth,
   signInWithEmailAndPassword,
+  signInWithCredential,
   sendEmailVerification,
   sendPasswordResetEmail,
   confirmPasswordReset,
   Auth as AuthClient,
+  GoogleAuthProvider,
+  OAuthCredential,
+  FacebookAuthProvider,
   checkActionCode,
   ActionCodeOperation,
 } from 'firebase/auth';
@@ -23,6 +27,7 @@ import {
   CreateAccountDto,
   LoginDto,
   ResetPassworDto,
+  SocialSignInProviders,
   VerifyResetPassworDto,
 } from '../account/account.types';
 
@@ -68,6 +73,31 @@ export class FirebaseService {
       return result.user.getIdToken();
     } catch (error) {
       throw new Error(error.response.data.error.message);
+    }
+  }
+
+  async socialLogin(
+    provider: SocialSignInProviders,
+    token: string,
+  ): Promise<string> {
+    let authCredential: OAuthCredential;
+    switch (provider) {
+      case SocialSignInProviders.GOOGLE:
+        authCredential = GoogleAuthProvider.credential(token);
+        break;
+      case SocialSignInProviders.FACEBOOK:
+        authCredential = FacebookAuthProvider.credential(token);
+      default:
+        break;
+    }
+    try {
+      const result = await signInWithCredential(
+        this.authClientInstance,
+        authCredential,
+      );
+      return result.user.getIdToken();
+    } catch (error) {
+      throw new Error(JSON.stringify(error));
     }
   }
 
