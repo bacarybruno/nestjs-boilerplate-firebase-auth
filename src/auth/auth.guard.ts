@@ -16,7 +16,7 @@ export class AuthGuard implements CanActivate {
       request.user = await this.firebaseService.decodeToken(accessToken);
       return request.user != null;
     } catch (error) {
-      throw new UnauthorizedException(error.message);
+      throw new UnauthorizedException(error.code);
     }
   }
 }

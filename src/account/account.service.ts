@@ -20,7 +20,7 @@ export class AccountService {
       const result = await this.firebaseService.sendResetPasswordEmail(email);
       return result;
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(error);
     }
   }
 
@@ -29,7 +29,7 @@ export class AccountService {
       const result = await this.firebaseService.verifyResetPasswordCode(data);
       return result;
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(error);
     }
   }
 
@@ -38,7 +38,7 @@ export class AccountService {
       const result = await this.firebaseService.resetPassword(data);
       return result;
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(error);
     }
   }
 
@@ -47,7 +47,7 @@ export class AccountService {
       const accessToken = await this.firebaseService.login(credentials);
       return accessToken;
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(error);
     }
   }
 
@@ -62,7 +62,7 @@ export class AccountService {
       );
       return accessToken;
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(error);
     }
   }
 
@@ -74,7 +74,7 @@ export class AccountService {
       );
       return accessToken;
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(error);
     }
   }
 
@@ -91,7 +91,7 @@ export class AccountService {
       await this.firebaseService.sendVerificationEmail(account, language);
       return accessToken;
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw new BadRequestException(error);
     }
   }
 

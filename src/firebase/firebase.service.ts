@@ -68,16 +68,12 @@ export class FirebaseService {
   }
 
   async login(credentials: LoginDto): Promise<AccessToken> {
-    try {
-      const result = await signInWithEmailAndPassword(
-        this.authClientInstance,
-        credentials.email,
-        credentials.password,
-      );
-      return result.user.getIdToken();
-    } catch (error) {
-      throw new Error(error.response.data.error.message);
-    }
+    const result = await signInWithEmailAndPassword(
+      this.authClientInstance,
+      credentials.email,
+      credentials.password,
+    );
+    return result.user.getIdToken();
   }
 
   async phoneNumberLogin(
@@ -118,15 +114,11 @@ export class FirebaseService {
       default:
         break;
     }
-    try {
-      const result = await signInWithCredential(
-        this.authClientInstance,
-        authCredential,
-      );
-      return result.user.getIdToken();
-    } catch (error) {
-      throw new Error(error.message);
-    }
+    const result = await signInWithCredential(
+      this.authClientInstance,
+      authCredential,
+    );
+    return result.user.getIdToken();
   }
 
   async createAccount(account: CreateAccountDto): Promise<UserRecord> {
