@@ -109,7 +109,11 @@ export class FirebaseService {
     });
   }
 
-  async sendVerificationEmail(credentials: LoginDto): Promise<void> {
+  async sendVerificationEmail(
+    credentials: LoginDto,
+    language: string,
+  ): Promise<void> {
+    this.authClientInstance.languageCode = language;
     const result = await signInWithEmailAndPassword(
       this.authClientInstance,
       credentials.email,

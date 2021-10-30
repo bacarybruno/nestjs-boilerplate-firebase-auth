@@ -65,14 +65,17 @@ export class AccountService {
     }
   }
 
-  async createAccount(account: CreateAccountDto): Promise<AccessToken> {
+  async createAccount(
+    account: CreateAccountDto,
+    language: string,
+  ): Promise<AccessToken> {
     try {
       const createdUser = await this.firebaseService.createAccount(account);
       const accessToken = await this.firebaseService.login({
         email: createdUser.email,
         password: account.password,
       });
-      await this.firebaseService.sendVerificationEmail(account);
+      await this.firebaseService.sendVerificationEmail(account, language);
       return accessToken;
     } catch (error) {
       throw new BadRequestException(error.message);

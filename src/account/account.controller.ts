@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Headers,
   HttpCode,
   HttpStatus,
   Post,
@@ -40,8 +41,14 @@ export class AccountController {
   @HttpCode(HttpStatus.CREATED)
   @ApiCreatedResponse({ type: AccessTokenDto })
   @ApiBadRequestResponse({ description: 'Bad request' })
-  async register(@Body() account: CreateAccountDto): Promise<AccessTokenDto> {
-    const accessToken = await this.accountService.createAccount(account);
+  async register(
+    @Headers('Accept-Language') language: string,
+    @Body() account: CreateAccountDto,
+  ): Promise<AccessTokenDto> {
+    const accessToken = await this.accountService.createAccount(
+      account,
+      language,
+    );
     return { accessToken };
   }
 
