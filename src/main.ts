@@ -1,5 +1,6 @@
-import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import firebaseAdmin from 'firebase-admin';
 import { initializeApp as initializeClientApp } from 'firebase/app';
@@ -13,7 +14,7 @@ async function initializeFirebase() {
   initializeClientApp(firebaseConfig);
 }
 
-async function configureSwagger(app) {
+async function configureSwagger(app: NestExpressApplication) {
   const config = new DocumentBuilder()
     .addBearerAuth()
     .setTitle('NestJS Boilerplate')
@@ -25,10 +26,14 @@ async function configureSwagger(app) {
   SwaggerModule.setup('api', app, document);
 }
 
+function configureBindings(app: NestExpressApplication) {
+  app.useGlobalPipes(new ValidationPipe());
+}
+
 async function bootstrap() {
   await initializeFirebase();
-  const app = await NestFactory.create(AppModule);
-  app.useGlobalPipes(new ValidationPipe());
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  configureBindings(app);
   await configureSwagger(app);
   await app.listen(process.env.port || 3000);
 }

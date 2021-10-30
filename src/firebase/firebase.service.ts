@@ -1,3 +1,4 @@
+import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
@@ -21,6 +22,7 @@ import {
   checkActionCode,
   ActionCodeOperation,
 } from 'firebase/auth';
+import { lastValueFrom, map } from 'rxjs';
 import {
   AccessToken,
   ConfirmEmailDto,
@@ -31,13 +33,15 @@ import {
   VerifyResetPassworDto,
 } from '../account/account.types';
 
+const GOOGLE_APIS_BASE_URL = 'https://identitytoolkit.googleapis.com/v1';
+
 @Injectable()
 export class FirebaseService {
   API_KEY: string;
   authClientInstance: AuthClient;
   authServerInstance: AuthServer;
 
-  constructor(configService: ConfigService) {
+  constructor(configService: ConfigService, private httpService: HttpService) {
     this.API_KEY = configService.get('FIREBASE_API_KEY');
     this.authClientInstance = getAuth();
     this.authServerInstance = auth();
@@ -76,6 +80,29 @@ export class FirebaseService {
     }
   }
 
+  async phoneNumberLogin(
+    verificationId: string,
+    code: string,
+  ): Promise<string> {
+    try {
+      const request$ = this.httpService
+        .post(
+          `${GOOGLE_APIS_BASE_URL}/accounts:signInWithPhoneNumber?key=${this.API_KEY}`,
+          {
+            code,
+            sessionInfo: verificationId,
+          },
+        )
+        .pipe(map((res) => res.data));
+      const { idToken } = await lastValueFrom(request$);
+      return idToken;
+    } catch (error) {
+      throw new Error(
+        'Phone auth: Unable to verify the informations based on the provided code and verificationId.',
+      );
+    }
+  }
+
   async socialLogin(
     provider: SocialSignInProviders,
     token: string,
@@ -87,6 +114,7 @@ export class FirebaseService {
         break;
       case SocialSignInProviders.FACEBOOK:
         authCredential = FacebookAuthProvider.credential(token);
+        break;
       default:
         break;
     }
@@ -97,7 +125,7 @@ export class FirebaseService {
       );
       return result.user.getIdToken();
     } catch (error) {
-      throw new Error(JSON.stringify(error));
+      throw new Error(error.message);
     }
   }
 

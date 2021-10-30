@@ -4,6 +4,7 @@ import {
   Headers,
   HttpCode,
   HttpStatus,
+  Get,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -25,6 +26,7 @@ import {
   DecodedIdTokenDto,
   InitResetPasswordDto,
   LoginDto,
+  PhoneNumberLoginDto,
   ResetPassworDto,
   SocialLoginDto,
   SocialSignInProviders,
@@ -75,6 +77,19 @@ export class AccountController {
     return { accessToken };
   }
 
+  @Post('/login/phone')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: AccessTokenDto })
+  @ApiBadRequestResponse({ description: 'Bad request' })
+  async loginWithPhone(
+    @Body() credentials: PhoneNumberLoginDto,
+  ): Promise<AccessTokenDto> {
+    const accessToken = await this.accountService.phoneNumberSignIn(
+      credentials,
+    );
+    return { accessToken };
+  }
+
   @Post('/login/google')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: AccessTokenDto })
@@ -89,7 +104,7 @@ export class AccountController {
     return { accessToken };
   }
 
-  @Post('/me')
+  @Get('/me')
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)

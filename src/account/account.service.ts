@@ -4,6 +4,7 @@ import {
   ConfirmEmailDto,
   CreateAccountDto,
   LoginDto,
+  PhoneNumberLoginDto,
   ResetPassworDto,
   SocialSignInProviders,
   VerifyResetPassworDto,
@@ -58,6 +59,18 @@ export class AccountService {
       const accessToken = await this.firebaseService.socialLogin(
         provider,
         token,
+      );
+      return accessToken;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async phoneNumberSignIn(credentials: PhoneNumberLoginDto) {
+    try {
+      const accessToken = await this.firebaseService.phoneNumberLogin(
+        credentials.verificationId,
+        credentials.code,
       );
       return accessToken;
     } catch (error) {

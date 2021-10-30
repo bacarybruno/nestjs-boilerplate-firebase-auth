@@ -19,6 +19,11 @@ export class SocialLoginDto {
   @ApiProperty() @IsNotEmpty() token: string;
 }
 
+export class PhoneNumberLoginDto {
+  @ApiProperty() @IsNotEmpty() verificationId: string;
+  @ApiProperty() @IsNotEmpty() code: string;
+}
+
 export class CreateAccountDto extends LoginDto {
   @ApiProperty() firstName: string;
   @ApiProperty() lastName: string;
