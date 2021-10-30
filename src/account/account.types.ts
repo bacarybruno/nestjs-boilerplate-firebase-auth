@@ -50,6 +50,11 @@ export class ConfirmEmailDto {
 
 export class AccessTokenDto {
   @ApiProperty() accessToken: string;
+  @ApiProperty() refreshToken: string;
+}
+
+export class RefreshTokenDto {
+  @ApiProperty() refreshToken: string;
 }
 
 export class UserRecordDto implements UserRecord {

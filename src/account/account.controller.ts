@@ -27,6 +27,7 @@ import {
   InitResetPasswordDto,
   LoginDto,
   PhoneNumberLoginDto,
+  RefreshTokenDto,
   ResetPassworDto,
   SocialLoginDto,
   SocialSignInProviders,
@@ -47,11 +48,7 @@ export class AccountController {
     @Headers('Accept-Language') language: string,
     @Body() account: CreateAccountDto,
   ): Promise<AccessTokenDto> {
-    const accessToken = await this.accountService.createAccount(
-      account,
-      language,
-    );
-    return { accessToken };
+    return this.accountService.createAccount(account, language);
   }
 
   @Post('/login')
@@ -59,8 +56,7 @@ export class AccountController {
   @ApiOkResponse({ type: AccessTokenDto })
   @ApiBadRequestResponse({ description: 'Bad request' })
   async login(@Body() credentials: LoginDto): Promise<AccessTokenDto> {
-    const accessToken = await this.accountService.login(credentials);
-    return { accessToken };
+    return this.accountService.login(credentials);
   }
 
   @Post('/login/facebookk')
@@ -70,11 +66,10 @@ export class AccountController {
   async loginWithFacebook(
     @Body() credentials: SocialLoginDto,
   ): Promise<AccessTokenDto> {
-    const accessToken = await this.accountService.socialSignIn(
+    return this.accountService.socialSignIn(
       SocialSignInProviders.FACEBOOK,
       credentials.token,
     );
-    return { accessToken };
   }
 
   @Post('/login/phone')
@@ -84,10 +79,7 @@ export class AccountController {
   async loginWithPhone(
     @Body() credentials: PhoneNumberLoginDto,
   ): Promise<AccessTokenDto> {
-    const accessToken = await this.accountService.phoneNumberSignIn(
-      credentials,
-    );
-    return { accessToken };
+    return this.accountService.phoneNumberSignIn(credentials);
   }
 
   @Post('/login/google')
@@ -97,11 +89,10 @@ export class AccountController {
   async loginWithGoogle(
     @Body() credentials: SocialLoginDto,
   ): Promise<AccessTokenDto> {
-    const accessToken = await this.accountService.socialSignIn(
+    return this.accountService.socialSignIn(
       SocialSignInProviders.GOOGLE,
       credentials.token,
     );
-    return { accessToken };
   }
 
   @Get('/me')
@@ -149,5 +140,13 @@ export class AccountController {
   @ApiBadRequestResponse({ description: 'Bad request' })
   async confirmEmail(@Body() body: ConfirmEmailDto): Promise<UserRecordDto> {
     return this.accountService.confirmEmail(body);
+  }
+
+  @Post('/refreshToken')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: AccessTokenDto })
+  @ApiBadRequestResponse({ description: 'Bad request' })
+  async refreshToken(@Body() body: RefreshTokenDto): Promise<AccessTokenDto> {
+    return this.accountService.refreshToken(body.refreshToken);
   }
 }

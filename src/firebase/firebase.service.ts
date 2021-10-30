@@ -25,6 +25,7 @@ import {
 import { lastValueFrom, map } from 'rxjs';
 import {
   AccessToken,
+  AccessTokenDto,
   ConfirmEmailDto,
   CreateAccountDto,
   LoginDto,
@@ -34,6 +35,7 @@ import {
 } from '../account/account.types';
 
 const GOOGLE_APIS_BASE_URL = 'https://identitytoolkit.googleapis.com/v1';
+const STS_APIS_BASE_URL = 'https://securetoken.googleapis.com/v1';
 
 @Injectable()
 export class FirebaseService {
@@ -67,19 +69,22 @@ export class FirebaseService {
     );
   }
 
-  async login(credentials: LoginDto): Promise<AccessToken> {
+  async login(credentials: LoginDto): Promise<AccessTokenDto> {
     const result = await signInWithEmailAndPassword(
       this.authClientInstance,
       credentials.email,
       credentials.password,
     );
-    return result.user.getIdToken();
+    return {
+      accessToken: await result.user.getIdToken(),
+      refreshToken: result.user.refreshToken,
+    };
   }
 
   async phoneNumberLogin(
     verificationId: string,
     code: string,
-  ): Promise<string> {
+  ): Promise<AccessTokenDto> {
     try {
       const request$ = this.httpService
         .post(
@@ -90,8 +95,8 @@ export class FirebaseService {
           },
         )
         .pipe(map((res) => res.data));
-      const { idToken } = await lastValueFrom(request$);
-      return idToken;
+      const { idToken, refreshToken } = await lastValueFrom(request$);
+      return { accessToken: idToken, refreshToken };
     } catch (error) {
       throw new Error(
         'Phone auth: Unable to verify the informations based on the provided code and verificationId.',
@@ -102,7 +107,7 @@ export class FirebaseService {
   async socialLogin(
     provider: SocialSignInProviders,
     token: string,
-  ): Promise<string> {
+  ): Promise<AccessTokenDto> {
     let authCredential: OAuthCredential;
     switch (provider) {
       case SocialSignInProviders.GOOGLE:
@@ -118,7 +123,10 @@ export class FirebaseService {
       this.authClientInstance,
       authCredential,
     );
-    return result.user.getIdToken();
+    return {
+      accessToken: await result.user.getIdToken(),
+      refreshToken: result.user.refreshToken,
+    };
   }
 
   async createAccount(account: CreateAccountDto): Promise<UserRecord> {
@@ -175,5 +183,15 @@ export class FirebaseService {
       request.header('Authorization')?.replace('Bearer', '')?.trim() ||
       (request.query.accessToken as string)
     );
+  }
+
+  async refreshToken(refreshToken: string): Promise<AccessTokenDto> {
+    const request$ = this.httpService
+      .post(
+        `${STS_APIS_BASE_URL}/token?key=${this.API_KEY}&grant_type=refresh_token&refresh_token=${refreshToken}`,
+      )
+      .pipe(map((res) => res.data));
+    const { id_token, refresh_token } = await lastValueFrom(request$);
+    return { accessToken: id_token, refreshToken: refresh_token };
   }
 }

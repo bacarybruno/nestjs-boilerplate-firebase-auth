@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
-  AccessToken,
+  AccessTokenDto,
   ConfirmEmailDto,
   CreateAccountDto,
   LoginDto,
@@ -42,10 +42,10 @@ export class AccountService {
     }
   }
 
-  async login(credentials: LoginDto): Promise<AccessToken> {
+  async login(credentials: LoginDto): Promise<AccessTokenDto> {
     try {
-      const accessToken = await this.firebaseService.login(credentials);
-      return accessToken;
+      const tokens = await this.firebaseService.login(credentials);
+      return tokens;
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -54,13 +54,10 @@ export class AccountService {
   async socialSignIn(
     provider: SocialSignInProviders,
     token: string,
-  ): Promise<AccessToken> {
+  ): Promise<AccessTokenDto> {
     try {
-      const accessToken = await this.firebaseService.socialLogin(
-        provider,
-        token,
-      );
-      return accessToken;
+      const tokens = await this.firebaseService.socialLogin(provider, token);
+      return tokens;
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -68,11 +65,11 @@ export class AccountService {
 
   async phoneNumberSignIn(credentials: PhoneNumberLoginDto) {
     try {
-      const accessToken = await this.firebaseService.phoneNumberLogin(
+      const tokens = await this.firebaseService.phoneNumberLogin(
         credentials.verificationId,
         credentials.code,
       );
-      return accessToken;
+      return tokens;
     } catch (error) {
       throw new BadRequestException(error);
     }
@@ -81,21 +78,32 @@ export class AccountService {
   async createAccount(
     account: CreateAccountDto,
     language: string,
-  ): Promise<AccessToken> {
+  ): Promise<AccessTokenDto> {
     try {
       const createdUser = await this.firebaseService.createAccount(account);
-      const accessToken = await this.firebaseService.login({
+      await this.firebaseService.sendVerificationEmail(account, language);
+      return await this.firebaseService.login({
         email: createdUser.email,
         password: account.password,
       });
-      await this.firebaseService.sendVerificationEmail(account, language);
-      return accessToken;
     } catch (error) {
       throw new BadRequestException(error);
     }
   }
 
   async confirmEmail(body: ConfirmEmailDto) {
-    return this.firebaseService.confirmUserEmail(body);
+    try {
+      return await this.firebaseService.confirmUserEmail(body);
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  async refreshToken(refreshToken: string): Promise<AccessTokenDto> {
+    try {
+      return await this.firebaseService.refreshToken(refreshToken);
+    } catch (error) {
+      throw new BadRequestException(error.response.data.error);
+    }
   }
 }
