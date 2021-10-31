@@ -7,6 +7,7 @@ import {
   PhoneNumberLoginDto,
   ResetPassworDto,
   SocialSignInProviders,
+  UserProfile,
   VerifyResetPassworDto,
 } from './account.types';
 import { FirebaseService } from '../firebase/firebase.service';
@@ -104,6 +105,15 @@ export class AccountService {
       return await this.firebaseService.refreshToken(refreshToken);
     } catch (error) {
       throw new BadRequestException(error.response.data.error);
+    }
+  }
+
+  async getProfile(uid: string): Promise<UserProfile> {
+    try {
+      const result = await this.firebaseService.getUserProfile(uid);
+      return result || {};
+    } catch (error) {
+      throw new BadRequestException(error);
     }
   }
 }

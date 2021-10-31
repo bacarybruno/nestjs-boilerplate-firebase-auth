@@ -103,6 +103,13 @@ export class DecodedIdTokenDto implements DecodedIdToken {
 }
 
 export enum SocialSignInProviders {
-  FACEBOOK = 'facebook',
-  GOOGLE = 'google',
+  FACEBOOK = 'facebook.com',
+  GOOGLE = 'google.com',
+}
+
+export interface UserProfile {
+  email?: string;
+  phoneNumber?: string;
+  displayName?: string;
+  photoURL?: string;
 }

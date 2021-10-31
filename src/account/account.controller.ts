@@ -31,6 +31,7 @@ import {
   ResetPassworDto,
   SocialLoginDto,
   SocialSignInProviders,
+  UserProfile,
   UserRecordDto,
   VerifyResetPassworDto,
 } from './account.types';
@@ -51,7 +52,7 @@ export class AccountController {
     return this.accountService.createAccount(account, language);
   }
 
-  @Post('/login')
+  @Post('/login/email')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: AccessTokenDto })
   @ApiBadRequestResponse({ description: 'Bad request' })
@@ -101,10 +102,8 @@ export class AccountController {
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: DecodedIdTokenDto })
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
-  async getProfile(
-    @User() user: DecodedIdTokenDto,
-  ): Promise<DecodedIdTokenDto> {
-    return user;
+  async getProfile(@User() user: DecodedIdTokenDto): Promise<UserProfile> {
+    return this.accountService.getProfile(user.uid);
   }
 
   @Post('/resetPassword/init')
