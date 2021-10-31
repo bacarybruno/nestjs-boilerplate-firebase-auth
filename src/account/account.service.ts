@@ -92,7 +92,7 @@ export class AccountService {
     }
   }
 
-  async confirmEmail(body: ConfirmEmailDto) {
+  async confirmEmail(body: ConfirmEmailDto): Promise<UserProfile> {
     try {
       return await this.firebaseService.confirmUserEmail(body);
     } catch (error) {
@@ -112,6 +112,14 @@ export class AccountService {
     try {
       const result = await this.firebaseService.getUserProfile(uid);
       return result || {};
+    } catch (error) {
+      throw new BadRequestException(error);
+    }
+  }
+
+  async updateProfile(uid: string, data: UserProfile): Promise<UserProfile> {
+    try {
+      return await this.firebaseService.updateUserProfile(uid, data);
     } catch (error) {
       throw new BadRequestException(error);
     }

@@ -208,7 +208,7 @@ export class FirebaseService {
     throw new Error('Code does not match the operation');
   }
 
-  async confirmUserEmail(data: ConfirmEmailDto): Promise<UserRecord> {
+  async confirmUserEmail(data: ConfirmEmailDto): Promise<UserProfile> {
     await this.checkActionCode(
       ActionCodeOperation.VERIFY_EMAIL,
       data.code,
@@ -243,8 +243,8 @@ export class FirebaseService {
 
   async updateUserProfile(userId: string, data: UserProfile) {
     const userDocRef = firestore().collection('users').doc(userId);
-    const result = await userDocRef.set(data, { merge: true });
-    return result;
+    await userDocRef.set(data, { merge: true });
+    return this.getUserProfile(userId);
   }
 
   async getUserProfile(userId: string): Promise<UserProfile> {

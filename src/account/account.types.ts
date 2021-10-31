@@ -1,12 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  DecodedIdToken,
-  MultiFactorSettings,
-  UserInfo,
-  UserMetadata,
-  UserRecord,
-} from 'firebase-admin/auth';
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsUrl, IsOptional } from 'class-validator';
 
 export type AccessToken = string;
 
@@ -57,49 +50,12 @@ export class RefreshTokenDto {
   @ApiProperty() refreshToken: string;
 }
 
-export class UserRecordDto implements UserRecord {
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  toJSON(): object {
-    throw new Error('Method not implemented.');
-  }
-  @ApiProperty() uid: string;
-  @ApiProperty({ required: false }) email?: string;
-  @ApiProperty() emailVerified: boolean;
-  @ApiProperty({ required: false }) displayName?: string;
-  @ApiProperty({ required: false }) photoURL?: string;
-  @ApiProperty({ required: false }) phoneNumber?: string;
-  @ApiProperty() disabled: boolean;
-  @ApiProperty() metadata: UserMetadata;
-  @ApiProperty() providerData: UserInfo[];
-  @ApiProperty({ required: false }) passwordHash?: string;
-  @ApiProperty({ required: false }) passwordSalt?: string;
-  @ApiProperty({ required: false }) customClaims?: { [key: string]: any };
-  @ApiProperty({ required: false }) tenantId?: string;
-  @ApiProperty({ required: false }) tokensValidAfterTime?: string;
-  @ApiProperty({ required: false }) multiFactor?: MultiFactorSettings;
-}
-
-export class DecodedIdTokenDto implements DecodedIdToken {
-  @ApiProperty() aud: string;
-  @ApiProperty() auth_time: number;
+export class DecodedIdTokenDto {
   @ApiProperty({ required: false }) email?: string;
   @ApiProperty({ required: false }) email_verified?: boolean;
-  @ApiProperty() exp: number;
-  @ApiProperty() iat: number;
-  @ApiProperty() iss: string;
   @ApiProperty({ required: false }) phone_number?: string;
   @ApiProperty({ required: false }) picture?: string;
-  @ApiProperty() sub: string;
   @ApiProperty() uid: string;
-  @ApiProperty()
-  firebase: {
-    [key: string]: any;
-    identities: { [key: string]: any };
-    sign_in_provider: string;
-    sign_in_second_factor?: string;
-    second_factor_identifier?: string;
-    tenant?: string;
-  };
 }
 
 export enum SocialSignInProviders {
@@ -112,4 +68,11 @@ export interface UserProfile {
   phoneNumber?: string;
   displayName?: string;
   photoURL?: string;
+}
+
+export class UpdateProfileDto implements UserProfile {
+  @ApiProperty({ required: false }) @IsOptional() @IsEmail() email?: string;
+  @ApiProperty({ required: false }) @IsOptional() phoneNumber?: string;
+  @ApiProperty({ required: false }) @IsOptional() displayName?: string;
+  @ApiProperty({ required: false }) @IsOptional() @IsUrl() photoURL?: string;
 }

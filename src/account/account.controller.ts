@@ -7,6 +7,7 @@ import {
   Get,
   Post,
   UseGuards,
+  Put,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
@@ -31,8 +32,8 @@ import {
   ResetPassworDto,
   SocialLoginDto,
   SocialSignInProviders,
+  UpdateProfileDto,
   UserProfile,
-  UserRecordDto,
   VerifyResetPassworDto,
 } from './account.types';
 
@@ -96,7 +97,7 @@ export class AccountController {
     );
   }
 
-  @Get('/me')
+  @Get('/profile')
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
@@ -104,6 +105,19 @@ export class AccountController {
   @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
   async getProfile(@User() user: DecodedIdTokenDto): Promise<UserProfile> {
     return this.accountService.getProfile(user.uid);
+  }
+
+  @Put('/profile')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse()
+  @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
+  async updateProfile(
+    @User() user: DecodedIdTokenDto,
+    @Body() data: UpdateProfileDto,
+  ): Promise<UserProfile> {
+    return this.accountService.updateProfile(user.uid, data);
   }
 
   @Post('/resetPassword/init')
@@ -135,9 +149,9 @@ export class AccountController {
 
   @Post('/email/confirm')
   @HttpCode(HttpStatus.OK)
-  @ApiOkResponse({ type: UserRecordDto })
+  @ApiOkResponse({ type: UpdateProfileDto })
   @ApiBadRequestResponse({ description: 'Bad request' })
-  async confirmEmail(@Body() body: ConfirmEmailDto): Promise<UserRecordDto> {
+  async confirmEmail(@Body() body: ConfirmEmailDto): Promise<UpdateProfileDto> {
     return this.accountService.confirmEmail(body);
   }
 
