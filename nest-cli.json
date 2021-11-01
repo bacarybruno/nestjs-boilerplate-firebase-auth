@@ -1,4 +1,27 @@
 {
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src"
+  "sourceRoot": "src",
+  "projects": {
+    "auth": {
+      "type": "library",
+      "root": "libs/auth",
+      "entryFile": "index",
+      "sourceRoot": "libs/auth/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/auth/tsconfig.lib.json"
+      }
+    },
+    "firebase": {
+      "type": "library",
+      "root": "libs/firebase",
+      "entryFile": "index",
+      "sourceRoot": "libs/firebase/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/firebase/tsconfig.lib.json"
+      }
+    }
+  },
+  "compilerOptions": {
+    "webpack": true
+  }
 }

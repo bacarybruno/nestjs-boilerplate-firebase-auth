@@ -36,5 +36,4 @@ lerna-debug.log*
 
 # Custom
 /.env
-/src/configuration/*.json
-!/src/configuration/*.template.json
+/src/configuration/*.config.*

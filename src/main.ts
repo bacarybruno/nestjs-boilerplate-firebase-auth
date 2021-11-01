@@ -2,17 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import firebaseAdmin from 'firebase-admin';
-import { initializeApp as initializeClientApp } from 'firebase/app';
-import { AppModule } from './app.module';
 
-async function initializeFirebase() {
-  firebaseAdmin.initializeApp({
-    credential: firebaseAdmin.credential.applicationDefault(),
-  });
-  const firebaseConfig = await import(process.env.FIREBASE_CLIENT_CREDENTIALS);
-  initializeClientApp(firebaseConfig);
-}
+import { AppModule } from './app.module';
 
 async function configureSwagger(app: NestExpressApplication) {
   const config = new DocumentBuilder()
@@ -31,7 +22,6 @@ function configureBindings(app: NestExpressApplication) {
 }
 
 async function bootstrap() {
-  await initializeFirebase();
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   configureBindings(app);
   await configureSwagger(app);

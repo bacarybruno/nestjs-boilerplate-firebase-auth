@@ -17,8 +17,8 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { User } from 'src/user.decorator';
+import { User } from '@app/user.decorator';
+import { AuthGuard } from '@app/auth/auth.guard';
 import { AccountService } from './account.service';
 import {
   AccessTokenDto,
