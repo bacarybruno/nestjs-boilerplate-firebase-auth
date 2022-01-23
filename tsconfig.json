@@ -17,26 +17,6 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "resolveJsonModule": true,
-    "paths": {
-      "@app": [
-        "src"
-      ],
-      "@app/*": [
-        "src/*"
-      ],
-      "@app/auth": [
-        "libs/auth/src"
-      ],
-      "@app/auth/*": [
-        "libs/auth/src/*"
-      ],
-      "@app/firebase": [
-        "libs/firebase/src"
-      ],
-      "@app/firebase/*": [
-        "libs/firebase/src/*"
-      ]
-    }
+    "resolveJsonModule": true
   }
 }

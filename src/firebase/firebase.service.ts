@@ -21,6 +21,8 @@ import {
   FacebookAuthProvider,
   checkActionCode,
   ActionCodeOperation,
+  UserCredential,
+  User,
 } from 'firebase/auth';
 import { lastValueFrom, map } from 'rxjs';
 import {
@@ -33,11 +35,7 @@ import {
   SocialSignInProviders,
   UserProfile,
   VerifyResetPassworDto,
-} from '@app/auth/account/account.types';
-
-import firebaseAdmin from 'firebase-admin';
-import { initializeApp as initializeClientApp } from 'firebase/app';
-import { firebaseConfig } from '@app/configuration/firebase-client.config';
+} from '../account/account.types';
 
 const GOOGLE_APIS_BASE_URL = 'https://identitytoolkit.googleapis.com/v1';
 const STS_APIS_BASE_URL = 'https://securetoken.googleapis.com/v1';
@@ -50,19 +48,11 @@ export class FirebaseService {
   private firestoreInstance: firestore.Firestore;
 
   constructor(configService: ConfigService, private httpService: HttpService) {
-    this.initializeFirebase();
     this.API_KEY = configService.get('FIREBASE_API_KEY');
     this.authClientInstance = getAuth();
     this.authServerInstance = auth();
     this.firestoreInstance = firestore();
     this.firestoreInstance.settings({ ignoreUndefinedProperties: true });
-  }
-
-  initializeFirebase() {
-    firebaseAdmin.initializeApp({
-      credential: firebaseAdmin.credential.applicationDefault(),
-    });
-    initializeClientApp(firebaseConfig);
   }
 
   async sendResetPasswordEmail(email: string): Promise<void> {

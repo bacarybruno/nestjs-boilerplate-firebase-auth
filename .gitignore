@@ -37,4 +37,5 @@ lerna-debug.log*
 # Custom
 /.env
 /src/configuration/firebase-client.config.ts
-/src/configuration/firebase-adminsdk.config.json
+/src/configuration/*.json
+!/src/configuration/*.template.json
